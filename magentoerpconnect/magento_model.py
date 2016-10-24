@@ -652,6 +652,11 @@ class StoreImportMapper(ImportMapper):
         return {'website_id': binding_id}
 
     @mapping
+    def lang(self, record):
+        if self.backend_record.default_lang_id:
+            return {'lang_id': self.backend_record.default_lang_id.id}
+
+    @mapping
     @only_create
     def warehouse_id(self, record):
         return {'warehouse_id': self.backend_record.warehouse_id.id}

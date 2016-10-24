@@ -181,7 +181,8 @@ class MagentoCRUDAdapter(CRUDAdapter):
                 'A network error caused the failure of the job: '
                 '%s' % err)
         except xmlrpclib.ProtocolError as err:
-            if err.errcode in [502,   # Bad gateway
+            if err.errcode in [404,  # Not Found is a temporary fault code with pp
+                               502,   # Bad gateway
                                503,   # Service unavailable
                                504]:  # Gateway timeout
                 raise RetryableJobError(
@@ -191,6 +192,18 @@ class MagentoCRUDAdapter(CRUDAdapter):
                     'Error code: %d\n'
                     'Error message: %s\n' %
                     (err.url, err.headers, err.errcode, err.errmsg))
+            else:
+                raise
+        except xmlrpclib.Fault as err:
+            # Fault 2: 'Access denied.'  (seems to be a temporary issue
+            #                             with pp magento)
+            # Fault 5: 'Session expired. Try to relogin.'
+            if err.faultCode in [2, 5]:
+                raise RetryableJobError(
+                    'An xmlrpc error caused the failure of the job:\n'
+                    'Error code: %d\n'
+                    'Error message: %s\n' %
+                    (err.faultCode, err.faultString))
             else:
                 raise
 

@@ -568,7 +568,6 @@ class ProductImportMapper(ImportMapper):
               ('weight', 'weight'),
               ('cost', 'standard_price'),
               ('short_description', 'description_sale'),
-              ('sku', 'default_code'),
               ('type_id', 'product_type'),
               (normalize_datetime('created_at'), 'created_at'),
               (normalize_datetime('updated_at'), 'updated_at'),

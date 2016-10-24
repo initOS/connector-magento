@@ -1080,7 +1080,9 @@ class SaleOrderLineImportMapper(ImportMapper):
         base_row_total_incl_tax = float(record['base_row_total_incl_tax'] or
                                         0.)
         qty_ordered = float(record['qty_ordered'])
-        if self.options.tax_include:
+        if qty_ordered == 0:
+            result['price_unit'] = 0.0
+        elif self.options.tax_include:
             result['price_unit'] = base_row_total_incl_tax / qty_ordered
         else:
             result['price_unit'] = base_row_total / qty_ordered
