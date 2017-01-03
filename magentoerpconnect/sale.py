@@ -756,9 +756,6 @@ class SaleOrderImport(MagentoImportSynchronizer):
         partner = sess.browse('magento.res.partner',
                               partner_bind_id).openerp_id
 
-        # get parent's language
-        lang = sess.read('res.partner', partner_id, ['lang'])['lang'] or 'en_US'
-
         # Import of addresses. We just can't rely on the
         # ``customer_address_id`` field given by Magento, because it is
         # sometimes empty and sometimes wrong.
@@ -776,7 +773,7 @@ class SaleOrderImport(MagentoImportSynchronizer):
 
         # For the orders which are from guests, we let the addresses
         # as active because they don't have an address book.
-        addresses_defaults = {'lang': lang,
+        addresses_defaults = {'lang': partner.lang or 'en_US',
                               'parent_id': partner.id,
                               'magento_partner_id': partner_bind_id,
                               'email': record.get('customer_email', False),
